@@ -1,13 +1,33 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-
+import { AuthContext } from '../../context/AuthProvider';
+import toast from 'react-hot-toast';
 const SignUp = () => {
 
     const { handleSubmit, register, formState: { errors } } = useForm();
+    const {createUser, updateUser} = useContext(AuthContext);
+    const [signUpError, setSignupError] = useState('');
 
     const handleSignup = (data) => {
-        console.log(data)
+        console.log(data);
+        setSignupError('');
+        createUser(data.email, data.password)
+        .then(result =>{
+            const user = result.user;
+            console.log(user)
+            toast('user created successfully')
+            const userInfo = {
+                displayName : data.name
+            }
+            updateUser(userInfo)
+            .then(()=>{})
+            .catch(err=> console.error(err))
+        })
+        .catch(error =>{
+            console.error(error)
+            setSignupError(error)
+        })
     }
 
     return (
@@ -39,13 +59,14 @@ const SignUp = () => {
                             {...register('password', {
                                 required: 'Password is required',
                                 minLength: { value: 6, message: 'Password must be 6 character or longer' },
-                                pattern:{value:/(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])/, message:'Password must be strong'}
+                                pattern:{value:/(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])/, message:'Password must be number uppercase lowercase and special character'}
                             })}
                             className="input input-bordered 
                         w-full max-w-xs" />
                         {errors.password && <p className='text-red-600'>{errors.password?.message}</p>}
                     </div>
-                    <input className='btn btn-accent w-full' value='Signup' type="submit" />
+                    <input className='btn btn-accent mt-4 w-full' value='Signup' type="submit" />
+                    {signUpError && <p className='text-red-600'>{signUpError}</p>}
                 </form>
                 <p>Already have an account <Link to='/login' className='text-secondary'>Login</Link></p>
                 <div className="divider">OR</div>
