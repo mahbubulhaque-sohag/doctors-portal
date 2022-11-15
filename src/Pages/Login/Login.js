@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
 const Login = () => {
-    const { register, handleSubmit } = useForm();
+    const { register, formState:{errors}, handleSubmit } = useForm();
   
     const handleLogin = (data)=>{
         console.log(data)
@@ -17,12 +18,21 @@ const Login = () => {
 
                     <div className="form-control w-full max-w-xs">
                         <label className="label"><span className="label-text-alt">Email</span></label>
-                        <input type="text" {...register("email")} className="input input-bordered w-full max-w-xs" />
+                        <input type="email" 
+                        {...register("email", {required:'Email is required'})}
+                         className="input input-bordered w-full max-w-xs" />
+                         {errors.email && <p className='text-red-600'>{errors.email?.message}</p>}
                     </div>
                     <div className="form-control w-full max-w-xs">
                         <label className="label"><span className="label-text-alt">Password</span></label>
-                        <input type="password" {...register("password")} className="input input-bordered 
+                        <input type="password" 
+                        {...register("password",{
+                            required:'Password is required',
+                            minLength: {value:6, message: 'Password must be 6 characters or longer'},
+                        })} 
+                        className="input input-bordered 
                         w-full max-w-xs" />
+                        {errors.password && <p className='text-red-600'>{errors.password?.message}</p>}
                         <label className="label"><span className="label-text-alt">Forget Password?</span></label>
                     </div>
                     <input className='btn btn-accent w-full' value='Login' type="submit" />
